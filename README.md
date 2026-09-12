@@ -64,9 +64,9 @@ temporary storage, probes, resource limits, and a default NetworkPolicy:
 kubectl apply -k deploy/base
 ```
 
-The base references the multi-architecture `0.1.0` image. Tagged CI releases
-publish the image to GHCR with an SBOM and GitHub build-provenance attestation
-only after the unit and kind jobs pass.
+The base pins the multi-architecture `0.1.0` image by its immutable OCI index
+digest. Tagged CI releases publish images to GHCR with an SBOM and GitHub
+build-provenance attestation only after the unit and kind jobs pass.
 
 The play-test endpoint uses the existing in-cluster Kong OpenAI-compatible
 router:

@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: app
-          image: ghcr.io/whatnick/tcg-proxy-lab:0.1.0
+          image: ghcr.io/whatnick/tcg-proxy-lab:0.1.0@sha256:ade4edf2a7b29a53c5ae1be2c8c5c471fe8b5bd070feec8f6521e48a0b92581d
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
