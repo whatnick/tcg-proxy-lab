@@ -1,0 +1,12 @@
+TCG Proxy Lab is an independent, non-commercial playtesting tool.
+
+The web-service design was inspired by Pokémon Proxy PDF Maker:
+https://github.com/turkushan490/pokemon-proxy-pdf-maker
+
+PDF layout and Pokémon decklist support are provided by the MIT-licensed
+Silhouette Card Maker project:
+https://github.com/Alan-Cha/silhouette-card-maker
+
+Pokémon and Pokémon character names are trademarks of Nintendo, Creatures,
+and GAME FREAK. Card artwork and text belong to their respective rights
+holders. This project is not affiliated with or endorsed by those parties.

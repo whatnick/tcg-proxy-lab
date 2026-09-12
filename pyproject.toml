@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tcg-proxy-lab"
+version = "0.1.0"
+description = "Self-hosted playtest proxy PDF service"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+dependencies = [
+  "cloudscraper==1.2.71",
+  "fastapi==0.116.1",
+  "filetype==1.2.0",
+  "matplotlib==3.10.5",
+  "natsort==8.4.0",
+  "numpy==2.3.2",
+  "pillow==11.3.0",
+  "pydantic==2.11.7",
+  "pypdfium2==4.30.0",
+  "python-multipart==0.0.20",
+  "requests==2.32.4",
+  "uvicorn==0.35.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx==0.28.1",
+  "pytest==8.4.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

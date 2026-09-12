@@ -1,0 +1,3 @@
+[submodule "vendor/silhouette-card-maker"]
+	path = vendor/silhouette-card-maker
+	url = https://github.com/Alan-Cha/silhouette-card-maker.git

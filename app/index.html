@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TCG Proxy Lab</title>
+    <style>
+      :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+      body { margin: 0; background: #0d1117; color: #e6edf3; }
+      main { max-width: 760px; margin: 4rem auto; padding: 0 1rem; }
+      form { display: grid; gap: 1rem; }
+      textarea, select, button { font: inherit; }
+      textarea { min-height: 22rem; padding: 1rem; resize: vertical; background: #161b22; color: #e6edf3; border: 1px solid #30363d; border-radius: .5rem; }
+      .row { display: flex; gap: 1rem; align-items: center; }
+      button { padding: .75rem 1rem; color: white; background: #238636; border: 0; border-radius: .5rem; cursor: pointer; }
+      button:disabled { opacity: .6; cursor: wait; }
+      small, #status { color: #8b949e; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>TCG Proxy Lab</h1>
+      <p>Paste a Limitless-format decklist to create a print-ready PDF for private playtesting.</p>
+      <form id="proxy-form">
+        <textarea name="decklist" required placeholder="4 Card Name SET 123"></textarea>
+        <div class="row">
+          <label>Paper
+            <select name="paper_size">
+              <option value="a4">A4</option>
+              <option value="letter">Letter</option>
+            </select>
+          </label>
+          <button type="submit">Create PDF</button>
+          <span id="status" role="status"></span>
+        </div>
+      </form>
+      <p><small>Playtesting only. Proxies are not tournament legal and must never be represented as genuine cards.</small></p>
+    </main>
+    <script>
+      const form = document.querySelector("#proxy-form");
+      const button = form.querySelector("button");
+      const status = document.querySelector("#status");
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        button.disabled = true;
+        status.textContent = "Generating…";
+        try {
+          const response = await fetch("/api/v1/proxies", { method: "POST", body: new FormData(form) });
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Generation failed");
+          }
+          const url = URL.createObjectURL(await response.blob());
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "playtest-proxies.pdf";
+          link.click();
+          URL.revokeObjectURL(url);
+          status.textContent = "PDF ready";
+        } catch (error) {
+          status.textContent = error.message;
+        } finally {
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
