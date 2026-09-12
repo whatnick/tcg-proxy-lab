@@ -6,4 +6,7 @@
 - Keep card resolution restricted to explicitly approved providers; never add arbitrary URL fetching.
 - Run generated or model-suggested actions through a deterministic rules engine before accepting them.
 - AI playtesting must produce recommendations or simulated actions, never purchases, trades, account actions, or tournament submissions.
+- Treat "self-evolving" as offline, versioned strategy optimization. Never let a model edit running code, prompts, policies, Kubernetes resources, or its own safety controls.
+- Only the deterministic rules engine may enumerate legal actions. Reject model output that is not in that exact action set.
+- Keep model access behind the configured OpenAI-compatible gateway; do not give play-test agents arbitrary network or shell tools.
 - Preserve attribution in `NOTICE` when adapting upstream MIT-licensed code.

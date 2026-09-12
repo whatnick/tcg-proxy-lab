@@ -19,6 +19,7 @@ The service also exposes:
 ```text
 GET  /healthz
 POST /api/v1/proxies
+POST /api/v1/playtest/decision
 GET  /docs
 ```
 
@@ -46,6 +47,65 @@ AI features will be added behind deterministic game rules rather than giving a m
 6. Record reproducible traces with model, prompt, rules, card-data, and random-seed versions.
 
 Decklists, card text, and future model output are untrusted inputs. AI agents will not receive shell access, arbitrary network access, purchasing capabilities, or user credentials.
+
+The first agent boundary is now available at `POST /api/v1/playtest/decision`.
+Callers provide a deterministic state summary plus the complete set of legal
+actions. The model must select through a forced tool call, and the service
+rejects any action outside that set. This is a policy layer, not yet a complete
+game engine.
+
+## Kubernetes deployment
+
+The `deploy/base` Kustomize package deploys the service into its own namespace
+with a non-root, read-only container, no service-account token, bounded
+temporary storage, probes, resource limits, and a default NetworkPolicy:
+
+```bash
+kubectl apply -k deploy/base
+```
+
+The base references the multi-architecture `0.1.0` image. Tagged CI releases
+publish the image to GHCR with an SBOM and GitHub build-provenance attestation
+only after the unit and kind jobs pass.
+
+The play-test endpoint uses the existing in-cluster Kong OpenAI-compatible
+router:
+
+```text
+http://kong-ai-gateway.librefang.svc.cluster.local:8000/openai/router/v1
+```
+
+If the gateway requires a caller key, copy `deploy/secret.example.yaml` outside
+the repository, replace the placeholder, protect it with your secret manager,
+and apply it before the Deployment. Never commit the populated Secret. The PDF
+service remains healthy without the Secret, while play-test requests return a
+gateway error if the configured gateway requires authentication.
+
+Run the full deployment smoke test in a disposable kind cluster:
+
+```bash
+kind create cluster --name tcg-proxy-lab
+bash deploy/kind/smoke-test.sh
+kind delete cluster --name tcg-proxy-lab
+```
+
+The kind overlay supplies a mock Kong endpoint and a test-only placeholder
+credential. CI verifies the container, enforced ingress policy, Service
+routing, and the forced legal-action decision flow.
+
+## Safe strategy evolution
+
+Self-evolution is planned as an offline promotion pipeline:
+
+1. Persist immutable match traces with seed, rules, card-data, prompt, model,
+   and strategy versions.
+2. Generate candidate strategy parameters in an isolated training job.
+3. Replay a fixed evaluation corpus through the deterministic rules engine.
+4. Require measurable improvement, safety checks, and explicit promotion.
+5. publish a new immutable strategy version with rollback metadata.
+
+The serving Pod never rewrites its code, system prompt, manifests, or safety
+policy. A model proposes actions only; deterministic code validates them.
 
 ## Attribution
 

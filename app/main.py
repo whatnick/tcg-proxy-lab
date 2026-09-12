@@ -6,6 +6,13 @@ from fastapi.responses import FileResponse, HTMLResponse
 from starlette.background import BackgroundTask
 
 from app.generator import generate_proxy_pdf
+from app.playtest import (
+    PlaytestDecisionRequest,
+    PlaytestDecisionResponse,
+    PlaytestGatewayError,
+    PlaytestNotConfiguredError,
+    request_playtest_decision,
+)
 
 
 app = FastAPI(
@@ -43,3 +50,15 @@ def create_proxies(
         filename="playtest-proxies.pdf",
         background=BackgroundTask(shutil.rmtree, work_dir, ignore_errors=True),
     )
+
+
+@app.post("/api/v1/playtest/decision", response_model=PlaytestDecisionResponse)
+async def create_playtest_decision(
+    request: PlaytestDecisionRequest,
+) -> PlaytestDecisionResponse:
+    try:
+        return await request_playtest_decision(request)
+    except PlaytestNotConfiguredError as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+    except PlaytestGatewayError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcg-proxy-lab
+data:
+  PLAYTEST_OPENAI_BASE_URL: http://kong-ai-gateway.librefang.svc.cluster.local:8000/openai/router/v1
+  PLAYTEST_MODEL: playtest-agent-router
